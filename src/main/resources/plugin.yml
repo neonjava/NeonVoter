@@ -1,0 +1,27 @@
+name: NeonVoter
+version: "1.0.0"
+main: dev.neonjava.neonvoter.NeonVoter
+description: All-in-one Folia-compatible vote receiver and reward plugin
+author: neonjava
+folia-supported: true
+api-version: "1.21"
+
+commands:
+  neonvoter:
+    description: Main NeonVoter admin command
+    aliases: [nv, voter]
+    permission: neonvoter.admin
+  vote:
+    description: Vote command for players
+    permission: neonvoter.vote
+
+permissions:
+  neonvoter.admin:
+    description: Full admin access to NeonVoter
+    default: op
+  neonvoter.vote:
+    description: Use /vote command
+    default: true
+  neonvoter.fakevote:
+    description: Trigger fake votes for testing
+    default: op

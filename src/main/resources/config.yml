@@ -1,0 +1,115 @@
+# ─────────────────────────────────────────────
+#           NeonVoter Configuration
+#         by neonjava  •  Folia Ready
+# ─────────────────────────────────────────────
+
+# ── Vote Server Settings ──────────────────────
+vote-server:
+  # IP to bind to. Use 0.0.0.0 to listen on all interfaces.
+  host: "0.0.0.0"
+  # Port to listen for votes on (default 8192, open this in your firewall)
+  port: 8192
+  # Disable NuVotifier protocol v1 (legacy, less secure).
+  # Set true if all your voting sites support v2.
+  disable-v1: false
+  # Token used for v2 connections (auto-generated if empty)
+  token: ""
+
+# ── Vote Message ─────────────────────────────
+vote-message:
+  # Message displayed when a player who is online votes
+  # Supports: {player}, {service}
+  broadcast: "&a&l✦ &r&a{player} &7has just voted on &b{service}&7! &a&l✦"
+  # Set to "" to disable broadcast
+  # Message sent to the voting player privately
+  player-message: "&b&lNeonVoter &8» &7Thank you for voting on &b{service}&7!"
+
+# ── Storage ───────────────────────────────────
+storage:
+  # Options: json, mysql
+  type: json
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "neonvoter"
+    username: "root"
+    password: ""
+    table: "votes"
+    # Streaks table
+    streaks-table: "vote_streaks"
+
+# ── /vote Command ─────────────────────────────
+vote-command:
+  enabled: true
+  message:
+    - "&b&lNeonVoter &8» &7Vote for us to get awesome rewards!"
+    - "&7&m                                     "
+    - "&b• &fMinecraft-MP: &ahttps://minecraft-mp.com/server/your-id"
+    - "&b• &fPlanet Minecraft: &ahttps://www.planetminecraft.com/server/your-server"
+    - "&7&m                                     "
+
+# ── Offline Vote Queuing ──────────────────────
+offline-votes:
+  enabled: true
+  # Max votes to queue per player while offline
+  max-queued: 3
+
+# ── Rewards ───────────────────────────────────
+# Each reward block has:
+#   name         - display name (for logs)
+#   services     - list of voting service names that trigger this (empty = all)
+#   conditions   - optional matching conditions
+#   actions      - list of actions to run when reward triggers
+#
+# Action types:
+#   COMMAND:<cmd>          - runs console command (use {player}, {service})
+#   BROADCAST:<msg>        - broadcasts a message
+#   MESSAGE:<msg>          - sends private message to voter
+#   SOUND:<SOUND_NAME>     - plays sound to voter
+#   TITLE:<title>|<sub>    - sends title to voter
+#
+# Condition types:
+#   every:<n>              - only trigger every n-th vote
+#   streak:<n>             - trigger when vote streak reaches n
+#   service:<name>         - only for specific service
+
+rewards:
+  # Default reward — fires for every vote from any service
+  - name: "Default Vote Reward"
+    services: []
+    conditions: []
+    actions:
+      - "COMMAND:give {player} diamond 1"
+      - "COMMAND:eco give {player} 500"
+      - "MESSAGE:&b&lNeonVoter &8» &aYou received &b1 Diamond &aand &b$500&a!"
+      - "SOUND:ENTITY_PLAYER_LEVELUP"
+      - "TITLE:&b&lThanks for voting!|&7You received your reward!"
+
+  # Streak reward — fires when player has voted 7 days in a row
+  - name: "7-Day Streak Reward"
+    services: []
+    conditions:
+      - "streak:7"
+    actions:
+      - "COMMAND:give {player} emerald 5"
+      - "BROADCAST:&6&l★ &r{player} &7has reached a &67-day voting streak&7! &6&l★"
+      - "TITLE:&6&l7-Day Streak!|&7Here are some bonus emeralds!"
+
+  # Every 5th vote reward
+  - name: "Every 5th Vote Bonus"
+    services: []
+    conditions:
+      - "every:5"
+    actions:
+      - "COMMAND:give {player} experience_bottle 3"
+      - "MESSAGE:&b&lNeonVoter &8» &aBonus! You've voted &b{total_votes}&a times total!"
+
+  # MinecraftMP-specific bonus
+  - name: "MinecraftMP Bonus"
+    services:
+      - "MinecraftMP"
+      - "Minecraft-MP"
+    conditions: []
+    actions:
+      - "COMMAND:give {player} gold_ingot 2"
+      - "MESSAGE:&e&lMinecraftMP Bonus &8» &aExtra &b2 Gold Ingots&a from voting on MinecraftMP!"
